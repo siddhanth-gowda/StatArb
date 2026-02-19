@@ -1,5 +1,5 @@
-Statistical Arbitrage: Cointegration-Based Pairs Trading Strategy
-Overview
+###Statistical Arbitrage: Cointegration-Based Pairs Trading Strategy
+##Overview
 
 This project implements a fully modular Statistical Arbitrage (Pairs Trading) pipeline in Python.
 
@@ -14,7 +14,7 @@ The strategy identifies and trades mean-reverting relationships between stocks u
 
 The objective is to systematically exploit temporary mispricing between statistically related assets.
 
-Methodology
+##Methodology
 1. Data Collection
 
 Daily price data (~8+ years) downloaded using Yahoo Finance.
@@ -127,5 +127,6 @@ Performance varies with:
 Entry/Exit z-score thresholds
 
 Stop-loss configuration
+
 
 Holding period limits
