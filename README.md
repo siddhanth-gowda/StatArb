@@ -1,133 +1,206 @@
-Statistical Arbitrage: Cointegration-Based Pairs Trading Strategy
-Overview
+# Statistical Arbitrage: Cointegration-Based Pairs Trading Strategy
 
-This project implements a fully modular Statistical Arbitrage (Pairs Trading) pipeline in Python.
+## Overview
 
-The strategy identifies and trades mean-reverting relationships between stocks using:
+This project implements a fully modular **Statistical Arbitrage (Pairs Trading) pipeline in Python**.
 
-• Cointegration testing (Engle-Granger method)
-• Stationarity testing (ADF test)
-• Hedge ratio estimation via OLS regression
-• Half-life filtering for mean reversion speed
-• Z-score based signal generation
-• Trade-level and portfolio-level backtesting
+The strategy identifies and trades **mean-reverting relationships between stocks** using:
 
-The objective is to systematically exploit temporary mispricing between statistically related assets.
+- Cointegration testing (Engle-Granger method)  
+- Stationarity testing (ADF test)  
+- Hedge ratio estimation via OLS regression  
+- Half-life filtering for mean reversion speed  
+- Z-score based signal generation  
+- Trade-level and portfolio-level backtesting  
 
-Methodology
-1. Data Collection
+The objective is to **systematically exploit temporary mispricing between statistically related assets**.
 
-Daily price data (~8+ years) downloaded using Yahoo Finance.
+---
 
-Universe tested:
+## Methodology
 
-NIFTY 50 equities (extendable to other universes)
+### 1. Data Collection
 
-Cleaned and aligned time series
+- Daily price data (~8+ years) downloaded using Yahoo Finance  
+- Universe tested: **NIFTY 50 equities** (extendable to other universes)  
+- Cleaned and aligned time series  
+- Missing values removed for consistency  
 
-Missing values removed for consistency
+---
 
-2. Cointegration & Pair Selection
+### 2. Cointegration & Pair Selection
 
 For every possible pair:
 
-Estimate hedge ratio using OLS regression:
+**Step 1: Estimate Hedge Ratio using OLS Regression**
 
-Yₜ = α + βXₜ + εₜ
+\[
+Y_t = \alpha + \beta X_t + \varepsilon_t
+\]
 
-Construct spread:
+**Step 2: Construct Spread**
 
-Spreadₜ = log(Yₜ) − β log(Xₜ)
+\[
+Spread_t = \log(Y_t) - \beta \log(X_t)
+\]
 
-Perform Augmented Dickey-Fuller (ADF) test on spread.
+**Step 3: Perform Stationarity Test**
 
-Pairs with stationary spread (p-value < threshold) are retained.
+- Augmented Dickey-Fuller (ADF) test applied to the spread  
+- Pairs with **stationary spread (p-value < threshold)** are retained  
 
-3. Half-Life Filtering
+---
 
-Mean reversion speed estimated using AR(1) regression:
+### 3. Half-Life Filtering
 
-ΔSₜ = λ Sₜ₋₁ + εₜ
+Mean reversion speed is estimated using **AR(1) regression**:
 
-Half-life calculated as:
+\[
+\Delta S_t = \lambda S_{t-1} + \varepsilon_t
+\]
 
-Half-life = −ln(2) / λ
+Half-life is calculated as:
 
-Only pairs with sufficiently fast mean reversion are selected.
+\[
+Half\text{-}life = -\ln(2) / \lambda
+\]
 
-4. Signal Generation
+Only pairs with **sufficiently fast mean reversion** are selected.
 
-Spread converted to rolling z-score:
+---
 
-Zₜ = (Spreadₜ − μₜ) / σₜ
+### 4. Signal Generation
 
-Trading rules:
+Spread is converted to a **rolling z-score**:
 
-• Enter LONG when Z < −entry threshold
-• Enter SHORT when Z > entry threshold
-• Exit when |Z| < exit threshold
-• Stop-loss when divergence increases
-• Maximum holding period constraint
+\[
+Z_t = \frac{Spread_t - \mu_t}{\sigma_t}
+\]
 
-Signals are generated pairwise and stored separately.
+**Trading Rules:**
 
-5. Backtesting Engine
+- Enter **LONG spread** when  
+  \[
+  Z < -\text{entry threshold}
+  \]
 
-Each trade:
+- Enter **SHORT spread** when  
+  \[
+  Z > \text{entry threshold}
+  \]
 
-Long Spread → (Y − βX)
-Short Spread → (−Y + βX)
+- Exit when  
+  \[
+  |Z| < \text{exit threshold}
+  \]
 
-For each completed trade:
+- Stop-loss when divergence exceeds limit  
 
-Entry and exit values calculated
+- Maximum holding period constraint enforced  
 
-Raw PnL computed
+Signals are generated **pairwise and stored independently**.
 
-Return % normalized by entry cost
+---
 
-Holding period measured
+### 5. Backtesting Engine
 
-Year-wise returns aggregated
+Each trade is constructed as:
 
-Performance metrics:
+- **Long Spread:**  
+  \[
+  (Y - \beta X)
+  \]
 
-• Total Return
-• Average Return per Trade
-• Median Return
-• Win Rate
-• Average Holding Period
+- **Short Spread:**  
+  \[
+  (-Y + \beta X)
+  \]
 
-6. Portfolio Construction
+For each completed trade, the following are computed:
 
-Pairs filtered based on:
+- Entry and exit values  
+- Raw PnL  
+- Return % normalized by entry cost  
+- Holding period  
+- Year-wise return aggregation  
 
-• Total return threshold
-• Minimum win rate
-• Sufficient number of trades
-• Acceptable holding duration
+**Performance Metrics:**
 
-Portfolio-level metrics computed:
+- Total Return  
+- Average Return per Trade  
+- Median Return  
+- Win Rate  
+- Average Holding Period  
 
-• Sharpe Ratio
-• Max Drawdown
-• Aggregate Return
+---
 
-Results
+### 6. Portfolio Construction
+
+Pairs are filtered based on:
+
+- Minimum total return threshold  
+- Minimum win rate requirement  
+- Minimum number of trades  
+- Acceptable holding duration  
+
+**Portfolio-level metrics computed:**
+
+- Sharpe Ratio  
+- Maximum Drawdown  
+- Aggregate Return  
+
+---
+
+## Results
 
 The strategy demonstrates:
 
-• Robust mean-reversion behavior across selected pairs
-• Sharpe ratio approximately 3–4 (parameter dependent)
-• Consistent multi-year performance
-• High win rates (~55–75%)
+- Robust mean-reversion behavior across selected pairs  
+- Sharpe ratio approximately **3–4** (parameter dependent)  
+- Consistent multi-year performance  
+- High win rates (~55–75%)  
 
-Performance varies with:
+Performance sensitivity depends on:
 
-Entry/Exit z-score thresholds
+- Entry and exit z-score thresholds  
+- Stop-loss configuration  
+- Maximum holding period limits  
 
-Stop-loss configuration
+---
 
+## Key Features
 
-Holding period limits
+- Fully modular pipeline  
+- Robust statistical pair selection  
+- Trade-level and portfolio-level evaluation  
+- Extensible to any equity universe  
+- Production-ready research framework  
 
+---
+
+## Applications
+
+This framework can be extended for:
+
+- Multi-asset statistical arbitrage  
+- ETF pairs trading  
+- Crypto statistical arbitrage  
+- Market-neutral hedge fund strategies  
+- Quantitative alpha research pipelines  
+
+---
+
+## Tech Stack
+
+- Python  
+- NumPy  
+- Pandas  
+- Statsmodels  
+- SciPy  
+- Matplotlib / Seaborn  
+
+---
+
+## Author
+
+Siddhanth Gowda
